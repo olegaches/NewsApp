@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">news test project</string>
+
+    <!--    Errors    -->
+    <string name="unknown_exception">An unknown error occurred</string>
+    <string name="io_exception">Couldn\'t reach server. Check your internet connection.</string>
+    <string name="first_minute_declination">минуту назад</string>
+    <string name="second_minute_declination">минуты назад</string>
+    <string name="third_minute_declination">минут назад</string>
+    <string name="first_hour_declination">час назад</string>
+    <string name="second_hour_declination">часа назад</string>
+    <string name="third_hour_declination">часов назад</string>
+    <string name="first_day_declination">день назад</string>
+    <string name="second_day_declination">дня назад</string>
+    <string name="third_day_declination">дней назад</string>
+    <string name="first_month_declination">месяц назад</string>
+    <string name="news_list_placeholder">Новостей не найдено</string>
+
+</resources>
