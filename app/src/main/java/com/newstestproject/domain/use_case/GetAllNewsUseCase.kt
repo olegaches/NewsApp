@@ -11,7 +11,7 @@ import javax.inject.Inject
 class GetAllNewsUseCase @Inject constructor(
     private val repository: NewsRepository
 ) {
-    operator fun invoke(keyWord: String, from: LocalDate, sortBy: NewsSortType): Flow<Resource<List<Article>>> {
-        return repository.getAllNews(keyWord, from, sortBy)
+    operator fun invoke(keyWord: String, sortBy: NewsSortType): Flow<Resource<List<Article>>> {
+        return repository.getAllNews(keyWord, sortBy)
     }
 }

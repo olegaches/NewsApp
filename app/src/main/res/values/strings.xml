@@ -4,6 +4,10 @@
     <!--    Errors    -->
     <string name="unknown_exception">An unknown error occurred</string>
     <string name="io_exception">Couldn\'t reach server. Check your internet connection.</string>
+    <string name="news_list_placeholder">Новостей не найдено</string>
+    <string name="refresh_page_tip">Повторить попытку</string>
+
+    <!--    Declination    -->
     <string name="first_minute_declination">минуту назад</string>
     <string name="second_minute_declination">минуты назад</string>
     <string name="third_minute_declination">минут назад</string>
@@ -14,6 +18,6 @@
     <string name="second_day_declination">дня назад</string>
     <string name="third_day_declination">дней назад</string>
     <string name="first_month_declination">месяц назад</string>
-    <string name="news_list_placeholder">Новостей не найдено</string>
+    <string name="image_failure_error">не удалось загрузить изображение</string>
 
 </resources>

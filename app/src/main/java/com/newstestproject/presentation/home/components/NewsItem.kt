@@ -1,13 +1,30 @@
 package com.newstestproject.presentation.home.components
 
 import android.content.Context
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight.Companion
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newstestproject.R
@@ -19,48 +36,90 @@ import kotlin.math.abs
 
 @Composable
 fun NewsItem(
-    modifier: Modifier,
     article: Article,
     onItemClick: () -> Unit,
 ) {
-    Column(
+    Card(
         modifier = Modifier
-            .clickable(
-                onClick = { onItemClick() }
-            ),
+            .padding(vertical = 3.dp)
+            .clickable() {
+                onItemClick()
+            },
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = Color.White,
+        elevation = 0.dp
     ) {
-        Row {
-            GlideImage(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .width(92.dp)
-                    .height(92.dp),
-                imageModel = { article.urlToImage },
-            )
-            Column(
-                modifier = Modifier,
+        Column(
+            modifier = Modifier
+                .padding(13.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top,
             ) {
+                article.urlToImage?.let {
+                    GlideImage(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .width(90.dp)
+                            .height(90.dp)
+                            .clip(RoundedCornerShape(6.dp)),
+                        imageModel = { article.urlToImage },
+                        loading = {
+                                  CircularProgressIndicator(Modifier.align(Alignment.Center))
+                        },
+                        failure = {
+                            Box(
+                                Modifier
+                                    .background(
+                                        color = Color.LightGray
+                                    )
+                                    .fillMaxSize()
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.image_failure_error),
+                                    fontSize = 10.sp,
+                                    color = Color.Gray,
+                                    modifier = Modifier.align(Alignment.Center),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 13.dp),
+                ) {
+                    Text(
+                        text = article.source.name,
+                        fontSize = 12.sp,
+                    )
+                    Text(
+                        text = article.title,
+                        style = MaterialTheme.typography.h6,
+                        fontSize = 18.sp,
+                    )
+                }
+            }
+
+            article.description?.let {
                 Text(
-                    text = article.source.name,
-                )
-                Text(
-                    text = article.title,
-                    color = Color.Blue,
-                    fontSize = 20.sp,
+                    modifier = Modifier
+                        .padding(vertical = 14.dp, horizontal = 4.dp),
+                    text = it,
+                    color = Color.DarkGray,
+                    fontSize = 16.sp,
                 )
             }
+            Text(
+                text = findHowLongAgo(LocalContext.current, article.publishedAt),
+                color = Color.Gray,
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .padding(vertical = 0.dp)
+            )
         }
-
-        Text(
-            text = article.description,
-            color = Color.DarkGray,
-            fontSize = 14.sp,
-        )
-        Text(
-            text = findHowLongAgo(LocalContext.current, article.publishedAt),
-            color = Color.Gray,
-            fontSize = 14.sp,
-        )
     }
 }
 

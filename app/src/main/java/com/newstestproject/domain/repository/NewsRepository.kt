@@ -9,6 +9,6 @@ import java.time.LocalDate
 
 interface NewsRepository {
 
-    fun getAllNews(keyWord: String, from: LocalDate, sortBy: NewsSortType): Flow<Resource<List<Article>>>
-    fun getTopArticles(keyWord: String, categoryName: CategoryName): Flow<Resource<List<Article>>>
+    fun getAllNews(keyWord: String, sortBy: NewsSortType): Flow<Resource<List<Article>>>
+    fun getTopArticles(categoryName: CategoryName? = null, keyWord: String? = null): Flow<Resource<List<Article>>>
 }

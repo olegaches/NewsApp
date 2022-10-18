@@ -16,7 +16,7 @@
         android:theme="@style/Theme.NewsTestProject"
         tools:targetApi="31">
         <activity
-            android:name=".core.presentation.MainActivity"
+            android:name=".presentation.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.NewsTestProject">

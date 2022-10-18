@@ -9,7 +9,11 @@ import com.newstestproject.data.local.entity.CategoryEntity
     entities = [CategoryEntity::class],
     version = 1
 )
-abstract class AppDataBase: RoomDatabase() {
+abstract class AppDatabase: RoomDatabase() {
 
     abstract val categoryDao: CategoryDao
+
+    companion object {
+        const val name = "app_dp"
+    }
 }

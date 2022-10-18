@@ -7,10 +7,10 @@ import com.newstestproject.util.CategoryName
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetTopArticles @Inject constructor(
+class GetTopArticlesUseCase @Inject constructor(
     private val repository: NewsRepository
 ) {
-    operator fun invoke(keyWord: String, categoryName: CategoryName): Flow<Resource<List<Article>>> {
-        return repository.getTopArticles(keyWord, categoryName)
+    operator fun invoke(categoryName: CategoryName? = null, keyWord: String? = null): Flow<Resource<List<Article>>> {
+        return repository.getTopArticles(categoryName, keyWord)
     }
 }

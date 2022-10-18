@@ -1,5 +1,9 @@
 package com.newstestproject.di
 
+import android.app.Application
+import androidx.room.Room
+import com.newstestproject.data.local.AppDatabase
+import com.newstestproject.data.local.CategoryDao
 import com.newstestproject.data.remote.NewsApi
 import dagger.Module
 import dagger.Provides
@@ -7,7 +11,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import javax.inject.Singleton
 
@@ -23,5 +26,21 @@ object NewsAppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryDao(
+        db: AppDatabase,
+    ): CategoryDao {
+        return db.categoryDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(app: Application): AppDatabase {
+        return Room.databaseBuilder(
+            app, AppDatabase::class.java, AppDatabase.name
+        ).build()
     }
 }

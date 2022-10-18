@@ -1,5 +1,7 @@
 package com.newstestproject.presentation.categories
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -14,12 +16,15 @@ fun CategoriesScreen(
 ) {
     val state = viewModel.state.collectAsState().value
     LazyColumn() {
-        items(state.categories) { category ->
+        items(
+            count = state.categories.size,
+        ) { index ->
             CategoryItem(
-                category = category,
-                modifier = Modifier,
+                category = state.categories[index],
+                modifier = Modifier
+                    .fillMaxWidth(),
                 onItemClick = {
-                    category.selected = !category.selected
+                    viewModel.onCategoryClicked(index)
                 }
             )
         }

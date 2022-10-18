@@ -7,8 +7,8 @@ import retrofit2.http.Query
 interface NewsApi {
     @GET("v2/top-headlines")
     suspend fun getTopNews(
-        @Query("q") keyWord: String,
-        @Query("category") category: String,
+        @Query("q") keyWord: String?,
+        @Query("category") category: String?,
         @Query("country") country: String = "ru",
         @Query("apiKey") apiKey: String = API_KEY,
     ): NewsDto
@@ -16,7 +16,6 @@ interface NewsApi {
     @GET("v2/everything")
     suspend fun getAllNews(
         @Query("q") keyWord: String,
-        @Query("from") from: String,
         @Query("sortBy") sortBy: String,
         @Query("language") language: String = "ru",
         @Query("apiKey") apiKey: String = API_KEY,

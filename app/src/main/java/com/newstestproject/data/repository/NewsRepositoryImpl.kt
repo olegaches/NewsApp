@@ -22,11 +22,10 @@ class NewsRepositoryImpl @Inject constructor(
     private val api: NewsApi
 ): NewsRepository {
 
-    override fun getAllNews(keyWord: String, from: LocalDate, sortBy: NewsSortType): Flow<Resource<List<Article>>> = flow {
+    override fun getAllNews(keyWord: String, sortBy: NewsSortType): Flow<Resource<List<Article>>> = flow {
         try {
             val data = api.getAllNews(
                 keyWord = keyWord,
-                from = from.toString(),
                 sortBy = sortBy.toString(),
             )
 
@@ -52,13 +51,13 @@ class NewsRepositoryImpl @Inject constructor(
     }
 
     override fun getTopArticles(
-        keyWord: String,
-        categoryName: CategoryName,
+        categoryName: CategoryName?,
+        keyWord: String?,
     ): Flow<Resource<List<Article>>> = flow {
         try {
             val data = api.getTopNews(
                 keyWord = keyWord,
-                categoryName.name
+                categoryName?.name
             )
 
             emit(Resource.Success(data = data.toNews().articles))

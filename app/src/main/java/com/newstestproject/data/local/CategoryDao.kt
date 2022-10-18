@@ -10,8 +10,9 @@ interface CategoryDao {
     suspend fun insertCategory(category: CategoryEntity)
 
     @Query("DELETE FROM category_table WHERE name=:name")
-    fun deleteCategory(name: String)
+    suspend fun deleteCategory(name: String)
 
     @Query("SELECT * FROM category_table ORDER BY id DESC")
     suspend fun getCategories(): List<CategoryEntity>
+
 }
