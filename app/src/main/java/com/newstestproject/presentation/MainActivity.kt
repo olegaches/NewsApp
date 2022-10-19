@@ -3,30 +3,20 @@ package com.newstestproject.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import com.newstestproject.R
 import com.newstestproject.core.presentation.ui.theme.NewsTestProjectTheme
-import com.newstestproject.presentation.Screen
 import com.newstestproject.presentation.categories.CategoriesScreen
 import com.newstestproject.presentation.components.BottomNavigationBar
 import com.newstestproject.presentation.home.HomeScreen
-import com.newstestproject.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -43,22 +33,23 @@ class MainActivity : ComponentActivity() {
                                 BottomNavItem(
                                     name = Screen.HomeScreen.name,
                                     route = Screen.HomeScreen.route,
-                                    icon = Icons.Default.Home
+                                    iconId = R.drawable.ic_home
                                 ),
                                 BottomNavItem(
                                     name = Screen.CategoriesScreen.name,
                                     route = Screen.CategoriesScreen.route,
-                                    icon = Icons.Default.Notifications,
+                                    iconId = R.drawable.ic_star,
                                 ),
                             ),
+                            backGroundColor = MaterialTheme.colors.background,
                             navController = navController,
                             onItemClick = {
                                 navController.navigate(it.route)
                             }
                         )
                     }
-                ) {
-                    Navigation(navController = navController)
+                ) { innerPadding ->
+                    Navigation(navController = navController, modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -66,8 +57,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
+fun Navigation(navController: NavHostController, modifier: Modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.HomeScreen.route,
+        modifier = modifier
+    ) {
         composable(Screen.HomeScreen.route) {
             HomeScreen()
         }
@@ -76,3 +71,4 @@ fun Navigation(navController: NavHostController) {
         }
     }
 }
+

@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class GetAllCategoriesUseCase @Inject constructor(
+class GetCategoriesUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
-    operator fun invoke(): Flow<List<Category>> = flow {
+    suspend operator fun invoke(): List<Category> {
         val selectedCategories = repository.getSelectedCategories()
         val categoriesList = mutableListOf<Category>()
         val categoriesNames = CategoryName.values()
@@ -23,6 +23,6 @@ class GetAllCategoriesUseCase @Inject constructor(
             }
         }
 
-        emit(categoriesList)
+        return categoriesList
     }
 }

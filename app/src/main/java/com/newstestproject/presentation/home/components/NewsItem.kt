@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.FirstBaseline
@@ -39,13 +40,15 @@ fun NewsItem(
     article: Article,
     onItemClick: () -> Unit,
 ) {
+    val shape = RoundedCornerShape(16.dp)
     Card(
         modifier = Modifier
             .padding(vertical = 3.dp)
+            .clip(shape)
             .clickable() {
                 onItemClick()
             },
-        shape = RoundedCornerShape(16.dp),
+        shape = shape,
         backgroundColor = Color.White,
         elevation = 0.dp
     ) {

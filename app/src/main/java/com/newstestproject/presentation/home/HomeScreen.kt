@@ -3,76 +3,257 @@ package com.newstestproject.presentation.home
 import android.content.Context
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.*
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextFieldColors
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.sp
 import com.newstestproject.R
 import com.newstestproject.core.util.UiText
-import com.newstestproject.presentation.Screen
 import com.newstestproject.presentation.home.components.NewsItem
-import com.newstestproject.util.Constants
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
+import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState().value
 
-    SwipeRefresh(
-        modifier = Modifier.fillMaxSize(),
-        state = rememberSwipeRefreshState(false),
-        onRefresh = { viewModel.loadNews() }) {
+    val scaffoldState = rememberScaffoldState()
+    val context = LocalContext.current
 
-        Box(Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                item {
-                    if(state.error == null && !state.isLoading && state.data.isEmpty()) {
-                        Text(text = stringResource(R.string.news_list_placeholder))
+    LaunchedEffect(key1 = true) {
+        viewModel.loadErrors.collectLatest { authResult ->
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = authResult.asString(context)
+            )
+        }
+    }
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var scrollState = rememberScrollState(50)
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        scaffoldState = scaffoldState,
+        topBar = {
+            val filterItems = listOf(stringResource(R.string.all_categories_filter)).plus(state.categories)
+            TopBar(
+                query = state.query,
+                onSearch = { viewModel.onSearch(it) },
+                filterItems = filterItems,
+                scrollBehavior = scrollBehavior,
+                onFilter = { viewModel.onFilter(it)},
+                onTopBarClick = {
+                    scrollState = ScrollState(0)
+                },
+            )
+        },
+
+    ) {
+        SwipeRefresh(
+            modifier = Modifier.fillMaxSize(),
+            state = rememberSwipeRefreshState(false),
+            onRefresh = { viewModel.loadNews() }) {
+
+            Box(Modifier.fillMaxSize()) {
+                if(state.error == null && !state.isLoading && state.data.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.news_list_placeholder),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState),
+                ) {
+                    items(state.data) { article ->
+                        NewsItem(
+                            article = article,
+                            onItemClick = {
+                                openTab(context, article.url)
+                            }
+                        )
                     }
                 }
-                items(state.data) { article ->
-                    val context = LocalContext.current
-                    NewsItem(
-                        article = article,
-                        onItemClick = {
-                            openTab(context, article.url)
-                        }
+
+                if(state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                ErrorHandler(error = state.error,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(20.dp),
+                    onRefreshClick = {
+                        viewModel.loadNews()
+                    })
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(query: String,
+           scrollBehavior: TopAppBarScrollBehavior,
+           filterItems: List<String>,
+           onTopBarClick: () -> Unit,
+           onFilter: (String) -> Unit,
+           onSearch: (String) -> Unit,
+) {
+    CenterAlignedTopAppBar(
+        scrollBehavior = scrollBehavior,
+        title = {
+        },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = MaterialTheme.colors.primary
+        ),
+        modifier = Modifier
+            .shadow(4.dp)
+            .clickable {
+                onTopBarClick()
+            },
+        actions = {
+            var searchMode: Boolean by remember { mutableStateOf(false) }
+            IconButton(
+                onClick = { searchMode = !searchMode },
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Search Icon",
+                    tint = MaterialTheme.colors.onPrimary
+                )
+                if(searchMode) {
+                    val focusRequester = remember { FocusRequester() }
+                    LaunchedEffect(Unit) {
+                        focusRequester.requestFocus()
+                    }
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = onSearch,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                            .focusRequester(focusRequester),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.primary),
+                        singleLine = true,
+                        leadingIcon = {
+                            IconButton(onClick = { searchMode = false; onSearch("") }) {
+                                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
+                            }
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = { onSearch("") }) {
+                                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear Icon")
+                            }
+                        },
+                        keyboardActions = KeyboardActions.Default
                     )
                 }
             }
-
-            if(state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
+        },
+        navigationIcon = {
+            var selectedFilterItem : String by remember { mutableStateOf(filterItems[0]) }
+            var expanded : Boolean by remember { mutableStateOf(false) }
+            Column {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable {
+                            expanded = !expanded
+                        }
+                        .padding(17.dp)
+                ) {
+                    Text(
+                        text = selectedFilterItem,
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "ArrowDropDown icon",
+                        modifier = Modifier.align(Alignment.Bottom)
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier
+                        .width(270.dp)
+                    ) {
+                    filterItems.forEach { item ->
+                        DropdownMenuItem(
+                            content = {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = SpaceBetween
+                                ) {
+                                    Text(
+                                        modifier = Modifier.padding(10.dp),
+                                        text = item,
+                                        color = MaterialTheme.colors.onBackground,
+                                        fontSize = 18.sp
+                                    )
+                                    if(selectedFilterItem == item) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.CheckCircle,
+                                            contentDescription = "Selected icon",
+                                            modifier = Modifier.align(Alignment.CenterVertically)
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                expanded = false
+                                selectedFilterItem = item
+                                onFilter(item)
+                            },
+                        )
+                    }
+                }
             }
-            ErrorHandler(error = state.error,
-                modifier = Modifier.align(Alignment.Center).padding(20.dp),
-                onRefreshClick = {
-                    viewModel.loadNews()
-                })
         }
-    }
+    )
 }
 
 @Composable
@@ -83,7 +264,7 @@ fun ErrorHandler(error: UiText?, modifier: Modifier, onRefreshClick: () -> Unit)
         ) {
             Text(
                 text = errorMsg.asString(),
-                color = MaterialTheme.colors.error,
+                color = Color.Black,
                 textAlign = TextAlign.Center,
             )
             TextButton(
@@ -92,7 +273,9 @@ fun ErrorHandler(error: UiText?, modifier: Modifier, onRefreshClick: () -> Unit)
                     .align(Alignment.CenterHorizontally),
 
                 ) {
-                Text(text = stringResource(R.string.refresh_page_tip))
+                Text(
+                    text = stringResource(R.string.refresh_page_tip),
+                    color = MaterialTheme.colors.onBackground)
             }
         }
     }

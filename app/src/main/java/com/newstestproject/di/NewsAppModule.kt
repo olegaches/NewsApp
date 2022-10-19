@@ -2,9 +2,13 @@ package com.newstestproject.di
 
 import android.app.Application
 import androidx.room.Room
+import com.google.gson.Gson
 import com.newstestproject.data.local.AppDatabase
+import com.newstestproject.data.local.ArticleDao
 import com.newstestproject.data.local.CategoryDao
+import com.newstestproject.data.local.Converters
 import com.newstestproject.data.remote.NewsApi
+import com.newstestproject.data.util.GsonParser
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,9 +42,17 @@ object NewsAppModule {
 
     @Provides
     @Singleton
+    fun provideArticleDao(
+        db: AppDatabase,
+    ): ArticleDao {
+        return db.articleDao
+    }
+
+    @Provides
+    @Singleton
     fun provideAppDatabase(app: Application): AppDatabase {
         return Room.databaseBuilder(
             app, AppDatabase::class.java, AppDatabase.name
-        ).build()
+        ).addTypeConverter(Converters(GsonParser(Gson()))).build()
     }
 }

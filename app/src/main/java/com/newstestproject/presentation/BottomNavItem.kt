@@ -1,10 +1,10 @@
 package com.newstestproject.presentation
 
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.DrawableRes
 
 data class BottomNavItem(
     val name: String,
     val route: String,
-    val icon: ImageVector,
+    @DrawableRes val iconId: Int,
     val badgeCount: Int = 0
 )
