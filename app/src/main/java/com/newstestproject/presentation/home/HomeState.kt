@@ -1,8 +1,8 @@
 package com.newstestproject.presentation.home
 
-import androidx.compose.foundation.ScrollState
 import com.newstestproject.core.util.UiText
 import com.newstestproject.domain.model.Article
+import com.newstestproject.util.CategoryName
 
 data class HomeState (
     val isLoading: Boolean = false,
@@ -10,5 +10,5 @@ data class HomeState (
     val error: UiText? = null,
     val isSearchOpen: Boolean = false,
     val query: String = "",
-    val categories: List<String> = emptyList(),
+    val categories: List<CategoryName> = emptyList(),
 )

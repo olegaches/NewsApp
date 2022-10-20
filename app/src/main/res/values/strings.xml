@@ -21,4 +21,13 @@
     <string name="third_day_declination">дней назад</string>
     <string name="first_month_declination">месяц назад</string>
 
+    <!--    Categories    -->
+    <string name="business_category">Бизнес</string>
+    <string name="entertainment_category">Развлечения</string>
+    <string name="general_category">Все новости</string>
+    <string name="health_category">Здоровье</string>
+    <string name="science_category">Наука и техника</string>
+    <string name="sports_category">Спорт</string>
+    <string name="technology_category">Бизнес</string>
+
 </resources>

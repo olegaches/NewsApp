@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.newstestproject.R
 import com.newstestproject.core.presentation.ui.theme.NewsTestProjectTheme
 import com.newstestproject.presentation.categories.CategoriesScreen
@@ -25,6 +26,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             NewsTestProjectTheme {
+                val systemUiController = rememberSystemUiController()
+                systemUiController.setSystemBarsColor(color = MaterialTheme.colors.primary)
                 val navController = rememberNavController()
                 Scaffold(
                     bottomBar = {

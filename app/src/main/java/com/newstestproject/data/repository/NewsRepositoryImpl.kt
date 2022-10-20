@@ -15,10 +15,7 @@ import com.newstestproject.util.NewsSortType
 import com.newstestproject.domain.model.Article
 import com.newstestproject.domain.repository.NewsRepository
 import com.newstestproject.util.CategoryName
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -66,7 +63,7 @@ class NewsRepositoryImpl @Inject constructor(
     }
 
     override fun getTopArticles(
-        categories: List<String>,
+        categories: List<CategoryName>,
         keyWord: String?,
     ): Flow<Resource<List<Article>>> = flow {
 
@@ -81,7 +78,7 @@ class NewsRepositoryImpl @Inject constructor(
                     val deferredItem = async {
                         val remoteArticles = api.getTopNews(
                             keyWord = keyWord,
-                            category = category
+                            category = category.name
                         ).articles
                         remoteArticles
                     }
@@ -116,5 +113,9 @@ class NewsRepositoryImpl @Inject constructor(
         catch(e: IOException) {
             emit(Resource.Error(UiText.StringResource(R.string.io_exception)))
         }
+    }
+
+    override fun getAllCategories(): List<CategoryName> {
+        return CategoryName.values().filter { it != CategoryName.general }
     }
 }

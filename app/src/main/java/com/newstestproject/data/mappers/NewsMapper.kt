@@ -9,6 +9,7 @@ import com.newstestproject.domain.model.Article
 import com.newstestproject.domain.model.Category
 import com.newstestproject.domain.model.News
 import com.newstestproject.domain.model.Source
+import com.newstestproject.util.CategoryName
 import org.joda.time.DateTime
 
 fun NewsDto.toNews(): News {
@@ -39,7 +40,7 @@ fun SourceDto.toSource(): Source {
     )
 }
 
-fun CategoryEntity.toCategoryName(): String {
+fun CategoryEntity.toCategoryName(): CategoryName {
     return this.name
 }
 

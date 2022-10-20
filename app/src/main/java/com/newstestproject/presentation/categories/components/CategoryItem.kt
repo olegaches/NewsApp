@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newstestproject.domain.model.Category
@@ -30,7 +31,7 @@ fun CategoryItem(
             modifier = Modifier.padding(10.dp)
         ) {
             Text(
-                text = category.name,
+                text = category.name.localizedName.asString(),
                 fontSize = 30.sp
             )
             if(category.selected) {
@@ -40,7 +41,7 @@ fun CategoryItem(
                         .size(30.dp),
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = null,
-                    tint = MaterialTheme.colors.primary,
+                    tint = MaterialTheme.colors.secondary,
                 )
             }
         }

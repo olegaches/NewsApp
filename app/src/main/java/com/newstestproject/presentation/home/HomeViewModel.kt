@@ -7,6 +7,7 @@ import com.newstestproject.core.util.UiText
 import com.newstestproject.domain.model.Article
 import com.newstestproject.domain.use_case.GetCategoriesArticlesUseCase
 import com.newstestproject.domain.use_case.GetSelectedCategoriesUseCase
+import com.newstestproject.util.CategoryName
 import com.newstestproject.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -49,6 +50,7 @@ class HomeViewModel @Inject constructor(
             getCategoriesArticlesUseCase(categories, query).collect { result ->
                 handleResourceResult(result)
             }
+            _state.update { it.copy(isLoading = false) }
         }
     }
 
@@ -74,17 +76,17 @@ class HomeViewModel @Inject constructor(
                 ) }
             }
         }
-        _state.update { it.copy(isLoading = false) }
     }
 
     private var filterJob: Job? = null
-    fun onFilter(filter: String) {
+    fun onFilter(filter: CategoryName) {
         _state.update { it.copy(isLoading = true, error = null, data = emptyList()) }
         filterJob?.cancel()
         filterJob = viewModelScope.launch {
             getCategoriesArticlesUseCase(listOf(filter)).collect { result ->
                 handleResourceResult(result)
             }
+            _state.update { it.copy(isLoading = false) }
         }
     }
 
@@ -96,16 +98,17 @@ class HomeViewModel @Inject constructor(
     private var loadNewsJob: Job? = null
 
     fun loadNews() {
-        _state.update { it.copy(isLoading = true, error = null, data = emptyList()) }
+        _state.update { it.copy(isLoading = true, data = emptyList()) }
         loadNewsJob?.cancel()
         loadNewsJob = viewModelScope.launch {
             val categories = getSelectedCategoriesUseCase()
 
-            _state.update { it.copy(isLoading = true, error = null, data = emptyList(), categories = categories) }
+            _state.update { it.copy(categories = categories) }
 
             getCategoriesArticlesUseCase(categories).collect { result ->
                 handleResourceResult(result)
             }
+            _state.update { it.copy(isLoading = false) }
         }
     }
 }

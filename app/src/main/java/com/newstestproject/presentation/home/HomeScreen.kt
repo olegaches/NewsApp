@@ -11,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,6 +20,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldColors
@@ -45,7 +47,9 @@ import androidx.compose.ui.unit.sp
 import com.newstestproject.R
 import com.newstestproject.core.util.UiText
 import com.newstestproject.presentation.home.components.NewsItem
+import com.newstestproject.util.CategoryName
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,27 +64,32 @@ fun HomeScreen(
     LaunchedEffect(key1 = true) {
         viewModel.loadErrors.collectLatest { authResult ->
             scaffoldState.snackbarHostState.showSnackbar(
-                message = authResult.asString(context)
+                message = authResult.asString(context),
+                duration = SnackbarDuration.Short
             )
         }
     }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var scrollState = rememberScrollState(50)
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         scaffoldState = scaffoldState,
         topBar = {
-            val filterItems = listOf(stringResource(R.string.all_categories_filter)).plus(state.categories)
+            val filterItems = state.categories
             TopBar(
                 query = state.query,
                 onSearch = { viewModel.onSearch(it) },
                 filterItems = filterItems,
+                defaultFilter = CategoryName.general,
                 scrollBehavior = scrollBehavior,
                 onFilter = { viewModel.onFilter(it)},
                 onTopBarClick = {
-                    scrollState = ScrollState(0)
+                    coroutineScope.launch {
+                        listState.scrollToItem(0)
+                    }
                 },
             )
         },
@@ -99,10 +108,9 @@ fun HomeScreen(
                     )
                 }
 
-                LazyColumn(
+                LazyColumn(state = listState,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState),
+                        .fillMaxWidth(),
                 ) {
                     items(state.data) { article ->
                         NewsItem(
@@ -135,9 +143,10 @@ fun HomeScreen(
 @Composable
 fun TopBar(query: String,
            scrollBehavior: TopAppBarScrollBehavior,
-           filterItems: List<String>,
+           filterItems: List<CategoryName>,
+           defaultFilter: CategoryName,
            onTopBarClick: () -> Unit,
-           onFilter: (String) -> Unit,
+           onFilter: (CategoryName) -> Unit,
            onSearch: (String) -> Unit,
 ) {
     CenterAlignedTopAppBar(
@@ -154,46 +163,55 @@ fun TopBar(query: String,
             },
         actions = {
             var searchMode: Boolean by remember { mutableStateOf(false) }
-            IconButton(
-                onClick = { searchMode = !searchMode },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Search Icon",
-                    tint = MaterialTheme.colors.onPrimary
-                )
-                if(searchMode) {
-                    val focusRequester = remember { FocusRequester() }
-                    LaunchedEffect(Unit) {
-                        focusRequester.requestFocus()
-                    }
-                    OutlinedTextField(
-                        value = query,
-                        onValueChange = onSearch,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp)
-                            .focusRequester(focusRequester),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.primary),
-                        singleLine = true,
-                        leadingIcon = {
-                            IconButton(onClick = { searchMode = false; onSearch("") }) {
-                                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
-                            }
-                        },
-                        trailingIcon = {
-                            IconButton(onClick = { onSearch("") }) {
-                                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear Icon")
-                            }
-                        },
-                        keyboardActions = KeyboardActions.Default
+
+            if(!searchMode) {
+                IconButton(
+                    onClick = { searchMode = !searchMode },
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Search Icon",
+                        tint = MaterialTheme.colors.onPrimary
                     )
                 }
             }
+            else {
+                val focusRequester = remember { FocusRequester() }
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = onSearch,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                        .focusRequester(focusRequester),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = MaterialTheme.colors.primary,
+                        cursorColor = MaterialTheme.colors.onPrimary,
+                        focusedIndicatorColor = MaterialTheme.colors.secondary,
+                        unfocusedIndicatorColor = MaterialTheme.colors.secondary),
+                    singleLine = true,
+                    leadingIcon = {
+                        IconButton(onClick = { searchMode = false; onSearch("") }) {
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
+                        }
+                    },
+                    trailingIcon = {
+                        if(query.isNotEmpty()) {
+                            IconButton(onClick = { onSearch("") }) {
+                                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear Icon")
+                            }
+                        }
+                    },
+                    keyboardActions = KeyboardActions.Default
+                )
+            }
         },
         navigationIcon = {
-            var selectedFilterItem : String by remember { mutableStateOf(filterItems[0]) }
+            var selectedFilterItem : CategoryName by remember { mutableStateOf(defaultFilter) }
             var expanded : Boolean by remember { mutableStateOf(false) }
             Column {
                 Row(
@@ -205,7 +223,7 @@ fun TopBar(query: String,
                         .padding(17.dp)
                 ) {
                     Text(
-                        text = selectedFilterItem,
+                        text = selectedFilterItem.localizedName.asString(),
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -221,7 +239,7 @@ fun TopBar(query: String,
                     modifier = Modifier
                         .width(270.dp)
                     ) {
-                    filterItems.forEach { item ->
+                    (listOf(defaultFilter).plus(filterItems)).forEach { category ->
                         DropdownMenuItem(
                             content = {
                                 Row(
@@ -230,11 +248,11 @@ fun TopBar(query: String,
                                 ) {
                                     Text(
                                         modifier = Modifier.padding(10.dp),
-                                        text = item,
+                                        text = category.localizedName.asString(),
                                         color = MaterialTheme.colors.onBackground,
                                         fontSize = 18.sp
                                     )
-                                    if(selectedFilterItem == item) {
+                                    if(selectedFilterItem == category) {
                                         Icon(
                                             imageVector = Icons.Rounded.CheckCircle,
                                             contentDescription = "Selected icon",
@@ -245,8 +263,8 @@ fun TopBar(query: String,
                             },
                             onClick = {
                                 expanded = false
-                                selectedFilterItem = item
-                                onFilter(item)
+                                selectedFilterItem = category
+                                onFilter(category)
                             },
                         )
                     }
@@ -275,7 +293,7 @@ fun ErrorHandler(error: UiText?, modifier: Modifier, onRefreshClick: () -> Unit)
                 ) {
                 Text(
                     text = stringResource(R.string.refresh_page_tip),
-                    color = MaterialTheme.colors.onBackground)
+                    color = MaterialTheme.colors.primaryVariant)
             }
         }
     }
