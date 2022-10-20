@@ -30,5 +30,6 @@
     <string name="science_category">Наука и техника</string>
     <string name="sports_category">Спорт</string>
     <string name="technology_category">Бизнес</string>
+    <string name="user_categories_placeholder">У вас нет добавленных категорий</string>
 
 </resources>

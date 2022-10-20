@@ -18,6 +18,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.newstestproject.R
 import com.newstestproject.core.presentation.ui.theme.NewsTestProjectTheme
 import com.newstestproject.presentation.categories.CategoriesScreen
+import com.newstestproject.presentation.category_search.CategorySearchScreen
 import com.newstestproject.presentation.components.BottomNavigationBar
 import com.newstestproject.presentation.home.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,20 +37,22 @@ class MainActivity : ComponentActivity() {
                         BottomNavigationBar(
                             items = listOf(
                                 BottomNavItem(
-                                    name = Screen.HomeScreen.name,
-                                    route = Screen.HomeScreen.route,
+                                    screen = Screen.HomeScreen,
                                     iconId = R.drawable.ic_home
                                 ),
                                 BottomNavItem(
-                                    name = Screen.CategoriesScreen.name,
-                                    route = Screen.CategoriesScreen.route,
+                                    screen = Screen.CategoriesScreen,
                                     iconId = R.drawable.ic_star,
                                 ),
                             ),
                             backgroundColor = MaterialTheme.colors.primary,
                             navController = navController,
                             onItemClick = {
-                                navController.navigate(it.route)
+                                navController.navigate(it.screen.route) {
+                                    popUpTo(it.screen.route) {
+                                        inclusive = true
+                                    }
+                                }
                             }
                         )
                     }
@@ -72,7 +75,10 @@ fun Navigation(navController: NavHostController, modifier: Modifier) {
             HomeScreen()
         }
         composable(Screen.CategoriesScreen.route) {
-            CategoriesScreen()
+            CategoriesScreen(navController)
+        }
+        composable(Screen.SearchCategoryScreen.route) {
+            CategorySearchScreen(navController)
         }
     }
 }

@@ -2,9 +2,10 @@ package com.newstestproject.presentation.categories
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.newstestproject.domain.model.Category
 import com.newstestproject.domain.use_case.AddCategoryUseCase
 import com.newstestproject.domain.use_case.DeleteCategoryUseCase
-import com.newstestproject.domain.use_case.GetCategoriesUseCase
+import com.newstestproject.domain.use_case.GetUserCategoriesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoriesViewModel @Inject constructor(
-    private val getAllCategoriesUseCase: GetCategoriesUseCase,
+    private val getAllCategoriesUseCase: GetUserCategoriesUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
     private val deleteCategoryUseCase: DeleteCategoryUseCase
 ): ViewModel() {
@@ -24,12 +25,17 @@ class CategoriesViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _state.update { it.copy(categories = getAllCategoriesUseCase()) }
+            _state.update { it.copy(
+                categories = getAllCategoriesUseCase().map { categoryName ->
+                    Category(categoryName)
+                }
+            )}
         }
     }
 
-    fun onCategoryClicked(categoryIndex: Int) {
+    fun onDeleteIconClick(categoryIndex: Int) {
         viewModelScope.launch {
+
             val categories = state.value.categories
                 .mapIndexed { index, category ->
                     if (index == categoryIndex) category.copy(
@@ -39,13 +45,11 @@ class CategoriesViewModel @Inject constructor(
                 }
 
             _state.update { it.copy(categories = categories) }
-            val category = categories[categoryIndex]
-            if(category.selected) {
-                addCategoryUseCase(category)
-            }
-            else {
-                deleteCategoryUseCase(category)
-            }
+            val category = state.value.categories[categoryIndex]
+            _state.update { it.copy(categories = state.value.categories.filter { categoryItem ->
+                categoryItem != category
+            }) }
+            deleteCategoryUseCase(category)
         }
     }
 }

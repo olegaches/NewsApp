@@ -113,7 +113,11 @@ fun HomeScreen(
                         )
                     Text(
                         text = placeHolder,
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .align(Alignment.Center),
+                        softWrap = true,
+                        textAlign = TextAlign.Center
                     )
                 }
 

@@ -38,7 +38,8 @@ fun BottomNavigationBar(
         containerColor = backgroundColor,
     ) {
         items.forEach { item ->
-            val selected = item.route == backStackEntry.value?.destination?.route
+            val selected = item.screen.route == backStackEntry.value?.destination?.route
+                    || item.screen.subRoutes?.contains(backStackEntry.value?.destination?.route) ?: false
             NavigationBarItem(
                 selected = selected,
                 onClick = {
@@ -55,10 +56,10 @@ fun BottomNavigationBar(
                         Icon(
                             painter = painterResource(id = item.iconId),
                             tint = if(selected) MaterialTheme.colors.primaryVariant else Color.Gray,
-                            contentDescription = item.name
+                            contentDescription = item.screen.name
                         )
                         Text(
-                            text = item.name,
+                            text = item.screen.name,
                             textAlign = TextAlign.Center,
                             fontSize = 10.sp,
                             color = if(selected) MaterialTheme.colors.primaryVariant else Color.Gray,
