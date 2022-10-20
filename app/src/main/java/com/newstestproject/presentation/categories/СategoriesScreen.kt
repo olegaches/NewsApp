@@ -69,9 +69,6 @@ fun CategoriesScreen(
                 ) { index ->
                     CategoryItem(
                         category = state.categories[index],
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
                         onDeleteIconClick = {
                             viewModel.onDeleteIconClick(index)
                         }

@@ -1,12 +1,9 @@
 package com.newstestproject.presentation.home.components
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -16,15 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.AlignmentLine
-import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight.Companion
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,7 +60,7 @@ fun NewsItem(
                             .clip(RoundedCornerShape(6.dp)),
                         imageModel = { article.urlToImage },
                         loading = {
-                                  CircularProgressIndicator(Modifier.align(Alignment.Center))
+                                  CircularProgressIndicator(Modifier.align(Alignment.Center), MaterialTheme.colors.primaryVariant)
                         },
                         failure = {
                             Box(
@@ -120,7 +111,7 @@ fun NewsItem(
                 color = Color.Gray,
                 fontSize = 12.sp,
                 modifier = Modifier
-                    .padding(vertical = 0.dp)
+                    .padding(horizontal = 4.dp)
             )
         }
     }

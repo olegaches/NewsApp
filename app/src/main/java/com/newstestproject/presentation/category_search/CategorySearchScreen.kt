@@ -91,16 +91,12 @@ fun CategorySearchScreen(
                 LazyColumn(state = listState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(HomeBackground),
                 ) {
                     items(
                         count = state.categories.size,
                     ) { index ->
                         CategoryItem(
                             category = state.categories[index],
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
                             onItemClick = {
                                 viewModel.onCategoryClicked(index)
                             }
