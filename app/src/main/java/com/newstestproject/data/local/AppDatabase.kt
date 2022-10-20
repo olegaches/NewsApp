@@ -8,7 +8,7 @@ import com.newstestproject.data.local.entity.CategoryEntity
 
 @Database(
     entities = [CategoryEntity::class, ArticleEntity::class],
-    version = 2
+    version = 1
 )
 
 @TypeConverters(Converters::class)

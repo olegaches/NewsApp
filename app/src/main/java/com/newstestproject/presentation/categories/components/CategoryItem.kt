@@ -32,7 +32,7 @@ fun CategoryItem(
         ) {
             Text(
                 text = category.name.localizedName.asString(),
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
             if(category.selected) {
                 Icon(
@@ -41,7 +41,7 @@ fun CategoryItem(
                         .size(30.dp),
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = null,
-                    tint = MaterialTheme.colors.secondary,
+                    tint = MaterialTheme.colors.primaryVariant,
                 )
             }
         }

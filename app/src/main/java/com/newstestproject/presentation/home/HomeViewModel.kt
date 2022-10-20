@@ -80,6 +80,11 @@ class HomeViewModel @Inject constructor(
 
     private var filterJob: Job? = null
     fun onFilter(filter: CategoryName) {
+        _state.update { it.copy(selectedFilter = filter) }
+        if(filter == CategoryName.general) {
+            loadNews()
+            return
+        }
         _state.update { it.copy(isLoading = true, error = null, data = emptyList()) }
         filterJob?.cancel()
         filterJob = viewModelScope.launch {
@@ -90,15 +95,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onWidgetChanged(isSearchOpen: Boolean) {
-        _state.update { it.copy(isSearchOpen = isSearchOpen) }
-        onSearch("")
-    }
-
     private var loadNewsJob: Job? = null
 
     fun loadNews() {
-        _state.update { it.copy(isLoading = true, data = emptyList()) }
+        _state.update { it.copy(isLoading = true, error = null, data = emptyList()) }
         loadNewsJob?.cancel()
         loadNewsJob = viewModelScope.launch {
             val categories = getSelectedCategoriesUseCase()

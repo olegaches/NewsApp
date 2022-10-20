@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newstestproject.R
+import com.newstestproject.core.presentation.ui.theme.HomeBackground
 import com.newstestproject.core.util.UiText
 import com.newstestproject.presentation.home.components.NewsItem
 import com.newstestproject.util.CategoryName
@@ -83,9 +84,10 @@ fun HomeScreen(
                 query = state.query,
                 onSearch = { viewModel.onSearch(it) },
                 filterItems = filterItems,
+                filterState = state.selectedFilter,
                 defaultFilter = CategoryName.general,
                 scrollBehavior = scrollBehavior,
-                onFilter = { viewModel.onFilter(it)},
+                onFilter = { viewModel.onFilter(it) },
                 onTopBarClick = {
                     coroutineScope.launch {
                         listState.scrollToItem(0)
@@ -101,16 +103,24 @@ fun HomeScreen(
             onRefresh = { viewModel.loadNews() }) {
 
             Box(Modifier.fillMaxSize()) {
-                if(state.error == null && !state.isLoading && state.data.isEmpty()) {
+                if (state.error == null && !state.isLoading && state.data.isEmpty()) {
+                    val placeHolder: String = if (state.selectedFilter == CategoryName.general)
+                        stringResource(R.string.news_list_placeholder)
+                    else
+                        stringResource(
+                            R.string.news_list_category_placeholder,
+                            state.selectedFilter.localizedName.asString(context)
+                        )
                     Text(
-                        text = stringResource(R.string.news_list_placeholder),
+                        text = placeHolder,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
 
                 LazyColumn(state = listState,
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .background(HomeBackground),
                 ) {
                     items(state.data) { article ->
                         NewsItem(
@@ -144,6 +154,7 @@ fun HomeScreen(
 fun TopBar(query: String,
            scrollBehavior: TopAppBarScrollBehavior,
            filterItems: List<CategoryName>,
+           filterState: CategoryName,
            defaultFilter: CategoryName,
            onTopBarClick: () -> Unit,
            onFilter: (CategoryName) -> Unit,
@@ -211,7 +222,6 @@ fun TopBar(query: String,
             }
         },
         navigationIcon = {
-            var selectedFilterItem : CategoryName by remember { mutableStateOf(defaultFilter) }
             var expanded : Boolean by remember { mutableStateOf(false) }
             Column {
                 Row(
@@ -223,7 +233,7 @@ fun TopBar(query: String,
                         .padding(17.dp)
                 ) {
                     Text(
-                        text = selectedFilterItem.localizedName.asString(),
+                        text = filterState.localizedName.asString(),
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -252,18 +262,18 @@ fun TopBar(query: String,
                                         color = MaterialTheme.colors.onBackground,
                                         fontSize = 18.sp
                                     )
-                                    if(selectedFilterItem == category) {
+                                    if(filterState == category) {
                                         Icon(
                                             imageVector = Icons.Rounded.CheckCircle,
                                             contentDescription = "Selected icon",
-                                            modifier = Modifier.align(Alignment.CenterVertically)
+                                            modifier = Modifier.align(Alignment.CenterVertically),
+                                            tint = MaterialTheme.colors.primaryVariant
                                         )
                                     }
                                 }
                             },
                             onClick = {
                                 expanded = false
-                                selectedFilterItem = category
                                 onFilter(category)
                             },
                         )

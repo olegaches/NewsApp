@@ -9,6 +9,7 @@ data class HomeState (
     val data: List<Article> = emptyList(),
     val error: UiText? = null,
     val isSearchOpen: Boolean = false,
+    val selectedFilter: CategoryName = CategoryName.general,
     val query: String = "",
     val categories: List<CategoryName> = emptyList(),
 )

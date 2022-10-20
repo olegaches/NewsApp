@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">news test project</string>
-    <string name="all_categories_filter">Все новости</string>
+    <string name="all_categories_filter">Новости</string>
 
     <!--    Errors    -->
     <string name="unknown_exception">Возникла неизвестная ошибка</string>
     <string name="io_exception">Ошибка загрузки. Проверьте подключение к сети и повторите попытку.</string>
-    <string name="news_list_placeholder">Новостей не найдено</string>
+    <string name="news_list_placeholder">Новостей по сохранённым темам не найдено</string>
+    <string name="news_list_category_placeholder">Новостей по теме не %s найдено</string>
     <string name="refresh_page_tip">Повторить попытку</string>
     <string name="image_failure_error">не удалось загрузить изображение</string>
 

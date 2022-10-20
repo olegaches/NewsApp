@@ -53,6 +53,7 @@ object NewsAppModule {
     fun provideAppDatabase(app: Application): AppDatabase {
         return Room.databaseBuilder(
             app, AppDatabase::class.java, AppDatabase.name
-        ).addTypeConverter(Converters(GsonParser(Gson()))).build()
+        ).addTypeConverter(Converters(GsonParser(Gson())))
+            .build()
     }
 }

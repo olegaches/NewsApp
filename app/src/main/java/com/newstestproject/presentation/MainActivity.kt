@@ -3,9 +3,11 @@ package com.newstestproject.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material3.NavigationBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -44,7 +46,7 @@ class MainActivity : ComponentActivity() {
                                     iconId = R.drawable.ic_star,
                                 ),
                             ),
-                            backGroundColor = MaterialTheme.colors.background,
+                            backgroundColor = MaterialTheme.colors.primary,
                             navController = navController,
                             onItemClick = {
                                 navController.navigate(it.route)
