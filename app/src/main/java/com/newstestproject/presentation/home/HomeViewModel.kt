@@ -66,7 +66,8 @@ class HomeViewModel @Inject constructor(
                 _loadErrors.emit(result.message)
                 if(state.value.data.isEmpty()) {
                     _state.update { it.copy(
-                        error = result.message
+                        error = result.message,
+                        data = result.data.orEmpty()
                     ) }
                 }
             }

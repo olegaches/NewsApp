@@ -138,16 +138,19 @@ fun HomeScreen(
 
                 if(state.isLoading) {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colors.primaryVariant
                     )
                 }
-                ErrorHandler(error = state.error,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(20.dp),
-                    onRefreshClick = {
-                        viewModel.loadNews()
-                    })
+                if(state.data.isEmpty()) {
+                    ErrorHandler(error = state.error,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(20.dp),
+                        onRefreshClick = {
+                            viewModel.loadNews()
+                        })
+                }
             }
         }
     }

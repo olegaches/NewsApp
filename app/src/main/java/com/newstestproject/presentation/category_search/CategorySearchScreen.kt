@@ -1,5 +1,6 @@
 package com.newstestproject.presentation.category_search
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.newstestproject.R
@@ -38,6 +40,17 @@ fun CategorySearchScreen(
     val state = viewModel.state.collectAsState().value
 
     val scaffoldState = rememberScaffoldState()
+
+    BackHandler(
+        enabled = true,
+        onBack  = {
+            navController.navigate(Screen.CategoriesScreen.route) {
+                popUpTo(Screen.CategoriesScreen.route) {
+                    inclusive = true
+                }
+            }
+        }
+    )
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val listState = rememberLazyListState()

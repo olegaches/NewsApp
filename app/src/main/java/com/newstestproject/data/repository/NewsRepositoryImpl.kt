@@ -66,10 +66,6 @@ class NewsRepositoryImpl @Inject constructor(
         categories: List<CategoryName>,
         keyWord: String?,
     ): Flow<Resource<List<Article>>> = flow {
-
-        val articles = articleDao.getArticles().map { it.toArticle() }.sortedByDescending { it.publishedAt }
-        emit(Resource.Loading(articles))
-
         try {
             val deferredLists = mutableListOf<Deferred<List<ArticleDto>>>()
 
@@ -99,19 +95,21 @@ class NewsRepositoryImpl @Inject constructor(
             emit(Resource.Success(data = remoteArticles.map { it.toArticle() }))
         }
         catch(e: HttpException) {
+            val cacheArticles = articleDao.getArticles().map { it.toArticle() }.sortedByDescending { it.publishedAt }
             if(e.localizedMessage.isNullOrEmpty()) {
-                emit(Resource.Error(UiText.StringResource(R.string.unknown_exception)))
+                emit(Resource.Error(UiText.StringResource(R.string.unknown_exception), cacheArticles))
             }
             val errorBody = e.response()?.errorBody()
             if(errorBody == null) {
-                emit(Resource.Error(UiText.DynamicString(e.localizedMessage!!)))
+                emit(Resource.Error(UiText.DynamicString(e.localizedMessage!!), cacheArticles))
             } else {
                 val errorMessage = Gson().fromJson(errorBody.charStream(), ErrorDto::class.java).message
-                emit(Resource.Error(UiText.DynamicString(errorMessage)))
+                emit(Resource.Error(UiText.DynamicString(errorMessage), cacheArticles))
             }
         }
         catch(e: IOException) {
-            emit(Resource.Error(UiText.StringResource(R.string.io_exception)))
+            val cacheArticles = articleDao.getArticles().map { it.toArticle() }.sortedByDescending { it.publishedAt }
+            emit(Resource.Error(UiText.StringResource(R.string.io_exception),cacheArticles ))
         }
     }
 

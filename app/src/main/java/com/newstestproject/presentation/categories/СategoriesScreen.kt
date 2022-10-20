@@ -1,5 +1,6 @@
 package com.newstestproject.presentation.categories
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.FloatingActionButton
@@ -33,6 +34,17 @@ fun CategoriesScreen(
 ) {
     val state = viewModel.state.collectAsState().value
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    BackHandler(
+        enabled = true,
+        onBack  = {
+            navController.navigate(Screen.HomeScreen.route) {
+                popUpTo(Screen.HomeScreen.route) {
+                    inclusive = true
+                }
+            }
+        }
+    )
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
