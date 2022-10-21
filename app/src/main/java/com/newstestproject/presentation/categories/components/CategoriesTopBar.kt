@@ -24,15 +24,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.newstestproject.core.presentation.ui.theme.SearchBackGround
 import com.newstestproject.presentation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(query: String,
            scrollBehavior: TopAppBarScrollBehavior,
+           containerColor: Color = MaterialTheme.colors.primary,
            onTopBarClick: () -> Unit,
            onSearch: (String) -> Unit,
 ) {
@@ -46,7 +49,7 @@ fun TopBar(query: String,
             )
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colors.primary
+            containerColor = containerColor
         ),
         modifier = Modifier
             .shadow(4.dp)
@@ -63,7 +66,7 @@ fun TopBar(query: String,
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Search Icon",
-                        tint = MaterialTheme.colors.onPrimary
+                        tint = MaterialTheme.colors.primary
                     )
                 }
             }
@@ -72,7 +75,7 @@ fun TopBar(query: String,
                 LaunchedEffect(Unit) {
                     focusRequester.requestFocus()
                 }
-                OutlinedTextField(
+                TextField(
                     value = query,
                     onValueChange = onSearch,
                     modifier = Modifier
@@ -81,20 +84,27 @@ fun TopBar(query: String,
                         .focusRequester(focusRequester),
                     shape = RoundedCornerShape(10.dp),
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = MaterialTheme.colors.primary,
-                        cursorColor = MaterialTheme.colors.onPrimary,
-                        focusedIndicatorColor = MaterialTheme.colors.secondary,
-                        unfocusedIndicatorColor = MaterialTheme.colors.secondary),
+                        backgroundColor = SearchBackGround,
+                        focusedIndicatorColor = MaterialTheme.colors.background,
+                        unfocusedIndicatorColor = MaterialTheme.colors.background),
                     singleLine = true,
                     leadingIcon = {
                         IconButton(onClick = { searchMode = false; onSearch("") }) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back Icon",
+                                tint = MaterialTheme.colors.primary,
+                            )
                         }
                     },
                     trailingIcon = {
                         if(query.isNotEmpty()) {
                             IconButton(onClick = { onSearch("") }) {
-                                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear Icon")
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear Icon",
+                                    tint = MaterialTheme.colors.primary,
+                                )
                             }
                         }
                     },

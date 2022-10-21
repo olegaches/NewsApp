@@ -6,5 +6,4 @@ import com.newstestproject.util.CategoryName
 data class CategorySearchState(
     val categories: List<Category> = emptyList(),
     val query: String = "",
-
 )

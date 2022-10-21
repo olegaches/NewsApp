@@ -40,7 +40,6 @@ fun NewsItem(
                 onItemClick()
             },
         shape = shape,
-        backgroundColor = Color.White,
         elevation = 0.dp
     ) {
         Column(
@@ -60,7 +59,7 @@ fun NewsItem(
                             .clip(RoundedCornerShape(6.dp)),
                         imageModel = { article.urlToImage },
                         loading = {
-                                  CircularProgressIndicator(Modifier.align(Alignment.Center), MaterialTheme.colors.primaryVariant)
+                                  CircularProgressIndicator(Modifier.align(Alignment.Center))
                         },
                         failure = {
                             Box(

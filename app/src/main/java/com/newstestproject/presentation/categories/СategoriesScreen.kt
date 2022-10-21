@@ -3,10 +3,7 @@ package com.newstestproject.presentation.categories
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,6 +50,7 @@ fun CategoriesScreen(
                 scrollBehavior = scrollBehavior,
                 onTopBarClick = {},
                 onSearch = {},
+                containerColor = androidx.compose.material.MaterialTheme.colors.background
             )
         }
     ) {
@@ -77,19 +75,19 @@ fun CategoriesScreen(
             }
 
             FloatingActionButton(
-                backgroundColor = androidx.compose.material.MaterialTheme.colors.primary,
                 modifier = Modifier
                     .padding(30.dp)
                     .align(Alignment.BottomEnd),
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 3.dp),
                 onClick = {
                     navController.navigate(Screen.SearchCategoryScreen.route)
                 },
             ) {
                 Icon(
                     modifier = Modifier,
-                    tint = androidx.compose.material.MaterialTheme.colors.primaryVariant,
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add button"
+                    contentDescription = "Add button",
+                    tint = androidx.compose.material.MaterialTheme.colors.primary
                 )
             }
         }

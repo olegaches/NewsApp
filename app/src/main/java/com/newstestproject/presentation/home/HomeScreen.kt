@@ -13,7 +13,6 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.CircularProgressIndicator
@@ -23,7 +22,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -46,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newstestproject.R
 import com.newstestproject.core.presentation.ui.theme.HomeBackground
+import com.newstestproject.core.presentation.ui.theme.SearchBackGround
 import com.newstestproject.core.util.UiText
 import com.newstestproject.presentation.home.components.NewsItem
 import com.newstestproject.util.CategoryName
@@ -81,6 +80,7 @@ fun HomeScreen(
         topBar = {
             val filterItems = state.categories
             TopBar(
+                containerColor = MaterialTheme.colors.background,
                 query = state.query,
                 onSearch = { viewModel.onSearch(it) },
                 filterItems = filterItems,
@@ -163,16 +163,18 @@ fun TopBar(query: String,
            filterItems: List<CategoryName>,
            filterState: CategoryName,
            defaultFilter: CategoryName,
+           containerColor: Color = MaterialTheme.colors.primary,
            onTopBarClick: () -> Unit,
            onFilter: (CategoryName) -> Unit,
            onSearch: (String) -> Unit,
 ) {
+    var searchMode: Boolean by remember { mutableStateOf(false) }
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior,
         title = {
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colors.primary
+            containerColor = containerColor
         ),
         modifier = Modifier
             .shadow(4.dp)
@@ -180,7 +182,6 @@ fun TopBar(query: String,
                 onTopBarClick()
             },
         actions = {
-            var searchMode: Boolean by remember { mutableStateOf(false) }
 
             if(!searchMode) {
                 IconButton(
@@ -189,7 +190,7 @@ fun TopBar(query: String,
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Search Icon",
-                        tint = MaterialTheme.colors.onPrimary
+                        tint = MaterialTheme.colors.primary
                     )
                 }
             }
@@ -198,7 +199,7 @@ fun TopBar(query: String,
                 LaunchedEffect(Unit) {
                     focusRequester.requestFocus()
                 }
-                OutlinedTextField(
+                TextField(
                     value = query,
                     onValueChange = onSearch,
                     modifier = Modifier
@@ -207,20 +208,27 @@ fun TopBar(query: String,
                         .focusRequester(focusRequester),
                     shape = RoundedCornerShape(10.dp),
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = MaterialTheme.colors.primary,
-                        cursorColor = MaterialTheme.colors.onPrimary,
-                        focusedIndicatorColor = MaterialTheme.colors.secondary,
-                        unfocusedIndicatorColor = MaterialTheme.colors.secondary),
+                        backgroundColor = SearchBackGround,
+                        focusedIndicatorColor = MaterialTheme.colors.background,
+                        unfocusedIndicatorColor = MaterialTheme.colors.background),
                     singleLine = true,
                     leadingIcon = {
                         IconButton(onClick = { searchMode = false; onSearch("") }) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back Icon",
+                                tint = MaterialTheme.colors.primary,
+                            )
                         }
                     },
                     trailingIcon = {
                         if(query.isNotEmpty()) {
                             IconButton(onClick = { onSearch("") }) {
-                                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear Icon")
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear Icon",
+                                    tint = MaterialTheme.colors.primary,
+                                )
                             }
                         }
                     },
@@ -230,60 +238,63 @@ fun TopBar(query: String,
         },
         navigationIcon = {
             var expanded : Boolean by remember { mutableStateOf(false) }
-            Column {
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .clickable {
-                            expanded = !expanded
-                        }
-                        .padding(17.dp)
-                ) {
-                    Text(
-                        text = filterState.localizedName.asString(),
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "ArrowDropDown icon",
-                        modifier = Modifier.align(Alignment.Bottom)
-                    )
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier
-                        .width(270.dp)
+            if(!searchMode) {
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .clickable {
+                                expanded = !expanded
+                            }
+                            .padding(17.dp)
                     ) {
-                    (listOf(defaultFilter).plus(filterItems)).forEach { category ->
-                        DropdownMenuItem(
-                            content = {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = SpaceBetween
-                                ) {
-                                    Text(
-                                        modifier = Modifier.padding(10.dp),
-                                        text = category.localizedName.asString(),
-                                        color = MaterialTheme.colors.onBackground,
-                                        fontSize = 18.sp
-                                    )
-                                    if(filterState == category) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.CheckCircle,
-                                            contentDescription = "Selected icon",
-                                            modifier = Modifier.align(Alignment.CenterVertically),
-                                            tint = MaterialTheme.colors.primaryVariant
-                                        )
-                                    }
-                                }
-                            },
-                            onClick = {
-                                expanded = false
-                                onFilter(category)
-                            },
+                        Text(
+                            text = filterState.localizedName.asString(),
+                            style = MaterialTheme.typography.h6,
+                            fontWeight = FontWeight.SemiBold
                         )
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "ArrowDropDown icon",
+                            modifier = Modifier.align(Alignment.Bottom),
+                            tint = MaterialTheme.colors.primary,
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier
+                            .width(270.dp)
+                    ) {
+                        (listOf(defaultFilter).plus(filterItems)).forEach { category ->
+                            DropdownMenuItem(
+                                content = {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = SpaceBetween
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.padding(10.dp),
+                                            text = category.localizedName.asString(),
+                                            color = MaterialTheme.colors.onBackground,
+                                            fontSize = 18.sp
+                                        )
+                                        if(filterState == category) {
+                                            Icon(
+                                                imageVector = Icons.Rounded.CheckCircle,
+                                                contentDescription = "Selected icon",
+                                                modifier = Modifier.align(Alignment.CenterVertically),
+                                                tint = MaterialTheme.colors.primaryVariant
+                                            )
+                                        }
+                                    }
+                                },
+                                onClick = {
+                                    expanded = false
+                                    onFilter(category)
+                                },
+                            )
+                        }
                     }
                 }
             }

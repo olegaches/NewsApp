@@ -62,6 +62,7 @@ fun CategorySearchScreen(
         topBar = {
             CategorySearchTopBar(
                 query = state.query,
+                containerColor = MaterialTheme.colors.background,
                 onSearch = { viewModel.onSearch(it) },
                 title = Screen.SearchCategoryScreen.name,
                 scrollBehavior = scrollBehavior,

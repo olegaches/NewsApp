@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             NewsTestProjectTheme {
                 val systemUiController = rememberSystemUiController()
-                systemUiController.setSystemBarsColor(color = MaterialTheme.colors.primary)
+                systemUiController.setSystemBarsColor(color = MaterialTheme.colors.background)
                 val navController = rememberNavController()
                 Scaffold(
                     bottomBar = {
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                                     iconId = R.drawable.ic_star,
                                 ),
                             ),
-                            backgroundColor = MaterialTheme.colors.primary,
+                            backgroundColor = MaterialTheme.colors.background,
                             navController = navController,
                             onItemClick = {
                                 navController.navigate(it.screen.route) {

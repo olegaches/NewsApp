@@ -22,9 +22,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.newstestproject.core.presentation.ui.theme.SearchBackGround
 import com.newstestproject.util.CategoryName
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,6 +35,7 @@ fun CategorySearchTopBar(
     query: String,
     title: String,
     scrollBehavior: TopAppBarScrollBehavior,
+    containerColor: Color = MaterialTheme.colors.primary,
     onTopBarClick: () -> Unit,
     onBackButtonClick: () -> Unit,
     onSearch: (String) -> Unit,
@@ -47,7 +50,7 @@ fun CategorySearchTopBar(
             )
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colors.primary
+            containerColor = containerColor
         ),
         modifier = Modifier
             .shadow(4.dp)
@@ -64,7 +67,7 @@ fun CategorySearchTopBar(
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Search Icon",
-                        tint = MaterialTheme.colors.onPrimary
+                        tint = MaterialTheme.colors.primary
                     )
                 }
             }
@@ -82,20 +85,27 @@ fun CategorySearchTopBar(
                         .focusRequester(focusRequester),
                     shape = RoundedCornerShape(10.dp),
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = MaterialTheme.colors.primary,
-                        cursorColor = MaterialTheme.colors.onPrimary,
-                        focusedIndicatorColor = MaterialTheme.colors.secondary,
-                        unfocusedIndicatorColor = MaterialTheme.colors.secondary),
+                        backgroundColor = SearchBackGround,
+                        focusedIndicatorColor = MaterialTheme.colors.background,
+                        unfocusedIndicatorColor = MaterialTheme.colors.background),
                     singleLine = true,
                     leadingIcon = {
                         IconButton(onClick = { searchMode = false; onSearch("") }) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Icon")
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back Icon",
+                                tint = MaterialTheme.colors.primary,
+                            )
                         }
                     },
                     trailingIcon = {
                         if(query.isNotEmpty()) {
                             IconButton(onClick = { onSearch("") }) {
-                                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear Icon")
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear Icon",
+                                    tint = MaterialTheme.colors.primary,
+                                )
                             }
                         }
                     },
@@ -109,7 +119,8 @@ fun CategorySearchTopBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colors.primary,
                 )
             }
         }

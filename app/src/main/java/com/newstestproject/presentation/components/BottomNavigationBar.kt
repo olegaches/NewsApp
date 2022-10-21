@@ -47,9 +47,7 @@ fun BottomNavigationBar(
                 },
                 enabled = true,
                 colors =  NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colors.primary,
-                    selectedIconColor = MaterialTheme.colors.primaryVariant,
-                    selectedTextColor = MaterialTheme.colors.primaryVariant,
+                    indicatorColor = MaterialTheme.colors.background,
                 ),
                 icon = {
                     Column(horizontalAlignment = CenterHorizontally) {
