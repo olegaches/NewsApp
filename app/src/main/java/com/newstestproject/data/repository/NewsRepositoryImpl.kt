@@ -63,52 +63,57 @@ class NewsRepositoryImpl @Inject constructor(
         categories: List<CategoryName>,
         keyWord: String?,
     ): Flow<Resource<List<Article>>> = flow {
-        val remoteLists = mutableListOf<List<ArticleDto>>()
+//        val remoteLists = mutableListOf<Deferred<List<ArticleDto>>>()
         var errorMessage: UiText? = null
-        coroutineScope {
-            val cacheArticles = async(Dispatchers.IO) { articleDao.getArticles().map { it.toArticle() }.sortedByDescending { it.publishedAt } }
-            try {
+        lateinit var cacheArticles: List<Article>
+        val handler = CoroutineExceptionHandler { scope, throwable ->
+            when(throwable) {
+                is HttpException -> {
+                    errorMessage = if(throwable.localizedMessage.isNullOrEmpty()) {
+                        UiText.StringResource(R.string.unknown_exception)
+                    }
+                    else {
+                        val errorBody = throwable.response()?.errorBody()
+                        if(errorBody == null) {
+                            UiText.DynamicString(throwable.localizedMessage!!)
+                        } else {
+                            UiText.DynamicString(Gson().fromJson(errorBody.charStream(), ErrorDto::class.java).message)
+                        }
+                    }
+                }
+                is IOException -> {
+                    errorMessage = UiText.StringResource(R.string.io_exception)
+                }
+            }
+            scope.cancel()
+        }
+        supervisorScope {
+            val remoteLists = mutableListOf<List<ArticleDto>>()
+            val getCacheArticlesJob = launch(Dispatchers.IO) { cacheArticles = articleDao.getArticles().map { it.toArticle() }.sortedByDescending { it.publishedAt } }
+            val getRemoteArticlesJob = launch(Dispatchers.IO + handler) {
                 for(category in categories) {
                     launch(Dispatchers.IO) {
-                        val remoteArticles = api.getTopNews(
+                        val remoteList = api.getTopNews(
                             keyWord = keyWord,
                             category = category.name
                         ).articles
-                        remoteLists.add(remoteArticles)
+                        remoteLists.add(remoteList)
                     }
+                }
+            }
+            getRemoteArticlesJob.join()
+            if(errorMessage == null) {
+                val articles = remoteLists.flatten().sortedByDescending { article ->
+                    article.publishedAt
                 }
 
                 articleDao.deleteAllArticles()
-                val articles = remoteLists.flatMap {
-                    it.sortedByDescending { article ->
-                        article.publishedAt
-                    }
-                }
-
                 articleDao.insertArticles(articles.map { it.toArticleEntity() })
                 emit(Resource.Success(data = articles.map { it.toArticle() }))
             }
-            catch(e: HttpException) {
-                errorMessage = if(e.localizedMessage.isNullOrEmpty()) {
-                    UiText.StringResource(R.string.unknown_exception)
-                }
-                else {
-                    val errorBody = e.response()?.errorBody()
-                    if(errorBody == null) {
-                        UiText.DynamicString(e.localizedMessage!!)
-                    } else {
-                        UiText.DynamicString(Gson().fromJson(errorBody.charStream(), ErrorDto::class.java).message)
-                    }
-                }
-            }
-            catch(e: IOException) {
-                errorMessage = UiText.StringResource(R.string.io_exception)
-            }
-            finally {
-                errorMessage?.let {
-                    emit(Resource.Error(errorMessage!!, cacheArticles.await()))
-                    this.cancel()
-                }
+            else {
+                getCacheArticlesJob.join()
+                emit(Resource.Error(errorMessage!!, cacheArticles))
             }
         }
     }
