@@ -7,7 +7,6 @@ import com.newstestproject.core.util.UiText
 import com.newstestproject.data.local.ArticleDao
 import com.newstestproject.data.mappers.toArticle
 import com.newstestproject.data.mappers.toArticleEntity
-import com.newstestproject.data.mappers.toNews
 import com.newstestproject.data.remote.NewsApi
 import com.newstestproject.data.remote.dto.ArticleDto
 import com.newstestproject.data.remote.dto.ErrorDto
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
-import java.time.LocalDate
 import javax.inject.Inject
 
 class NewsRepositoryImpl @Inject constructor(
@@ -65,50 +63,53 @@ class NewsRepositoryImpl @Inject constructor(
         categories: List<CategoryName>,
         keyWord: String?,
     ): Flow<Resource<List<Article>>> = flow {
-        try {
-            val deferredLists = mutableListOf<Deferred<List<ArticleDto>>>()
-
-            coroutineScope {
+        val remoteLists = mutableListOf<List<ArticleDto>>()
+        var errorMessage: UiText? = null
+        coroutineScope {
+            val cacheArticles = async(Dispatchers.IO) { articleDao.getArticles().map { it.toArticle() }.sortedByDescending { it.publishedAt } }
+            try {
                 for(category in categories) {
-                    val deferredItem = async {
+                    launch(Dispatchers.IO) {
                         val remoteArticles = api.getTopNews(
                             keyWord = keyWord,
                             category = category.name
                         ).articles
-                        remoteArticles
+                        remoteLists.add(remoteArticles)
                     }
-                    deferredLists.add(deferredItem)
+                }
+
+                articleDao.deleteAllArticles()
+                val articles = remoteLists.flatMap {
+                    it.sortedByDescending { article ->
+                        article.publishedAt
+                    }
+                }
+
+                articleDao.insertArticles(articles.map { it.toArticleEntity() })
+                emit(Resource.Success(data = articles.map { it.toArticle() }))
+            }
+            catch(e: HttpException) {
+                errorMessage = if(e.localizedMessage.isNullOrEmpty()) {
+                    UiText.StringResource(R.string.unknown_exception)
+                }
+                else {
+                    val errorBody = e.response()?.errorBody()
+                    if(errorBody == null) {
+                        UiText.DynamicString(e.localizedMessage!!)
+                    } else {
+                        UiText.DynamicString(Gson().fromJson(errorBody.charStream(), ErrorDto::class.java).message)
+                    }
                 }
             }
-
-            articleDao.deleteAllArticles()
-
-            val remoteArticles = mutableListOf<ArticleDto>()
-            for(list in deferredLists.awaitAll()) {
-                remoteArticles.addAll(list)
+            catch(e: IOException) {
+                errorMessage = UiText.StringResource(R.string.io_exception)
             }
-
-            remoteArticles.sortByDescending { it.publishedAt }
-            articleDao.insertArticles(remoteArticles.map { it.toArticleEntity() })
-
-            emit(Resource.Success(data = remoteArticles.map { it.toArticle() }))
-        }
-        catch(e: HttpException) {
-            val cacheArticles = articleDao.getArticles().map { it.toArticle() }.sortedByDescending { it.publishedAt }
-            if(e.localizedMessage.isNullOrEmpty()) {
-                emit(Resource.Error(UiText.StringResource(R.string.unknown_exception), cacheArticles))
+            finally {
+                errorMessage?.let {
+                    emit(Resource.Error(errorMessage!!, cacheArticles.await()))
+                    this.cancel()
+                }
             }
-            val errorBody = e.response()?.errorBody()
-            if(errorBody == null) {
-                emit(Resource.Error(UiText.DynamicString(e.localizedMessage!!), cacheArticles))
-            } else {
-                val errorMessage = Gson().fromJson(errorBody.charStream(), ErrorDto::class.java).message
-                emit(Resource.Error(UiText.DynamicString(errorMessage), cacheArticles))
-            }
-        }
-        catch(e: IOException) {
-            val cacheArticles = articleDao.getArticles().map { it.toArticle() }.sortedByDescending { it.publishedAt }
-            emit(Resource.Error(UiText.StringResource(R.string.io_exception),cacheArticles ))
         }
     }
 
