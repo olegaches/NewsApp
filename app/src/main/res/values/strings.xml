@@ -31,5 +31,8 @@
     <string name="sports_category">Спорт</string>
     <string name="technology_category">Бизнес</string>
     <string name="user_categories_placeholder">У вас нет добавленных категорий</string>
+    <string name="home_screen_name">Новости</string>
+    <string name="categories_screen_name">Категории</string>
+    <string name="search_categories_screen_name">Поиск категорий</string>
 
 </resources>

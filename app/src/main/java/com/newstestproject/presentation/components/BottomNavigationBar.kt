@@ -54,10 +54,10 @@ fun BottomNavigationBar(
                         Icon(
                             painter = painterResource(id = item.iconId),
                             tint = if(selected) MaterialTheme.colors.primaryVariant else Color.Gray,
-                            contentDescription = item.screen.name
+                            contentDescription = item.screen.screenName.asString()
                         )
                         Text(
-                            text = item.screen.name,
+                            text = item.screen.screenName.asString(),
                             textAlign = TextAlign.Center,
                             fontSize = 10.sp,
                             color = if(selected) MaterialTheme.colors.primaryVariant else Color.Gray,

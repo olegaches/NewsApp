@@ -64,7 +64,7 @@ fun CategorySearchScreen(
                 query = state.query,
                 containerColor = MaterialTheme.colors.background,
                 onSearch = { viewModel.onSearch(it) },
-                title = Screen.SearchCategoryScreen.name,
+                title = Screen.SearchCategoryScreen.screenName.asString(),
                 scrollBehavior = scrollBehavior,
                 onTopBarClick = {
                     coroutineScope.launch {

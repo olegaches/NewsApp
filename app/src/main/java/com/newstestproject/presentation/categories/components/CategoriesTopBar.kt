@@ -43,7 +43,7 @@ fun TopBar(query: String,
         scrollBehavior = scrollBehavior,
         title = {
             Text(
-                text = Screen.CategoriesScreen.name,
+                text = Screen.CategoriesScreen.screenName.asString(),
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.SemiBold
             )

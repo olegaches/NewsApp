@@ -63,7 +63,6 @@ class NewsRepositoryImpl @Inject constructor(
         categories: List<CategoryName>,
         keyWord: String?,
     ): Flow<Resource<List<Article>>> = flow {
-//        val remoteLists = mutableListOf<Deferred<List<ArticleDto>>>()
         var errorMessage: UiText? = null
         lateinit var cacheArticles: List<Article>
         val handler = CoroutineExceptionHandler { scope, throwable ->
