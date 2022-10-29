@@ -44,7 +44,7 @@ fun NewsItem(
     ) {
         Column(
             modifier = Modifier
-                .padding(13.dp),
+                .padding(16.dp),
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -53,9 +53,8 @@ fun NewsItem(
                 article.urlToImage?.let {
                     GlideImage(
                         modifier = Modifier
-                            .padding(2.dp)
-                            .width(90.dp)
-                            .height(90.dp)
+                            .width(95.dp)
+                            .height(95.dp)
                             .clip(RoundedCornerShape(6.dp)),
                         imageModel = { article.urlToImage },
                         loading = {
@@ -79,10 +78,9 @@ fun NewsItem(
                             }
                         }
                     )
+                    Spacer(modifier = Modifier.width(16.dp))
                 }
                 Column(
-                    modifier = Modifier
-                        .padding(horizontal = 13.dp),
                 ) {
                     Text(
                         text = article.source.name,
@@ -95,22 +93,19 @@ fun NewsItem(
                     )
                 }
             }
-
+            Spacer(modifier = Modifier.height(12.dp))
             article.description?.let {
                 Text(
-                    modifier = Modifier
-                        .padding(vertical = 14.dp, horizontal = 4.dp),
                     text = it,
                     color = Color.DarkGray,
                     fontSize = 16.sp,
                 )
+                Spacer(modifier = Modifier.height(12.dp))
             }
             Text(
                 text = findHowLongAgo(LocalContext.current, article.publishedAt),
                 color = Color.Gray,
                 fontSize = 12.sp,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
             )
         }
     }

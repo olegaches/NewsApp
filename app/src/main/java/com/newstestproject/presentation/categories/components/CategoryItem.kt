@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newstestproject.domain.model.Category
@@ -23,6 +24,7 @@ fun CategoryItem(
     Card(
         shape = shape,
         modifier = Modifier
+            .height(55.dp)
             .fillMaxWidth()
             .padding(vertical = 1.dp),
         elevation = 1.dp,
@@ -34,16 +36,16 @@ fun CategoryItem(
         ) {
             Text(
                 text = category.name.localizedName.asString(),
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
             )
             IconButton(
                 onClick = onDeleteIconClick,
-                modifier = Modifier.size(30.dp)
             ) {
                 Icon(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .size(30.dp),
+                        .size(25.dp),
                     imageVector = Icons.Filled.Delete,
                     contentDescription = null,
                     tint = Color.Red,

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newstestproject.domain.model.Category
@@ -28,6 +29,7 @@ fun CategoryItem(
         shape = shape,
         modifier = Modifier
             .fillMaxWidth()
+            .height(55.dp)
             .padding(vertical = 1.dp)
             .clickable { onItemClick() },
         elevation = 1.dp,
@@ -39,13 +41,14 @@ fun CategoryItem(
         ) {
             Text(
                 text = category.name.localizedName.asString(),
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
             )
             if(category.selected) {
                 Icon(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .size(30.dp),
+                        .size(25.dp),
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = null,
                     tint = MaterialTheme.colors.primaryVariant,

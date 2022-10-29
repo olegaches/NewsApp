@@ -27,9 +27,9 @@
     <string name="entertainment_category">Развлечения</string>
     <string name="general_category">Все новости</string>
     <string name="health_category">Здоровье</string>
-    <string name="science_category">Наука и техника</string>
+    <string name="science_category">Наука</string>
     <string name="sports_category">Спорт</string>
-    <string name="technology_category">Бизнес</string>
+    <string name="technology_category">Технологии</string>
     <string name="user_categories_placeholder">У вас нет добавленных категорий</string>
     <string name="home_screen_name">Новости</string>
     <string name="categories_screen_name">Категории</string>
