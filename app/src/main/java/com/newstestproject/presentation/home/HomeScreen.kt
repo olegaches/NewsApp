@@ -80,7 +80,6 @@ fun HomeScreen(
         topBar = {
             val filterItems = state.categories
             TopBar(
-                containerColor = MaterialTheme.colors.background,
                 query = state.query,
                 onSearch = { viewModel.onSearch(it) },
                 filterItems = filterItems,
@@ -163,7 +162,7 @@ fun TopBar(query: String,
            filterItems: List<CategoryName>,
            filterState: CategoryName,
            defaultFilter: CategoryName,
-           containerColor: Color = MaterialTheme.colors.primary,
+           containerColor: Color = MaterialTheme.colors.surface,
            onTopBarClick: () -> Unit,
            onFilter: (CategoryName) -> Unit,
            onSearch: (String) -> Unit,

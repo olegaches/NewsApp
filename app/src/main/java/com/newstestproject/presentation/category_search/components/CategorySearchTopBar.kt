@@ -35,7 +35,7 @@ fun CategorySearchTopBar(
     query: String,
     title: String,
     scrollBehavior: TopAppBarScrollBehavior,
-    containerColor: Color = MaterialTheme.colors.primary,
+    containerColor: Color = MaterialTheme.colors.surface,
     onTopBarClick: () -> Unit,
     onBackButtonClick: () -> Unit,
     onSearch: (String) -> Unit,

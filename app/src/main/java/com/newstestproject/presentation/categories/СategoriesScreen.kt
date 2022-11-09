@@ -50,7 +50,6 @@ fun CategoriesScreen(
                 scrollBehavior = scrollBehavior,
                 onTopBarClick = {},
                 onSearch = {},
-                containerColor = androidx.compose.material.MaterialTheme.colors.background
             )
         }
     ) {

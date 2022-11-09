@@ -31,10 +31,9 @@ fun NewsItem(
     article: Article,
     onItemClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(0.dp)
     Card(
         modifier = Modifier
-            .padding(vertical = 3.dp)
             .clip(shape)
             .clickable() {
                 onItemClick()
@@ -109,6 +108,7 @@ fun NewsItem(
             )
         }
     }
+    Spacer(Modifier.height(1.dp))
 }
 
 fun findHowLongAgo(

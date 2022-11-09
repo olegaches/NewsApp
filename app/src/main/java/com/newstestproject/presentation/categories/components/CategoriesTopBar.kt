@@ -35,7 +35,7 @@ import com.newstestproject.presentation.Screen
 @Composable
 fun TopBar(query: String,
            scrollBehavior: TopAppBarScrollBehavior,
-           containerColor: Color = MaterialTheme.colors.primary,
+           containerColor: Color = MaterialTheme.colors.surface,
            onTopBarClick: () -> Unit,
            onSearch: (String) -> Unit,
 ) {
