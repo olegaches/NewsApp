@@ -47,9 +47,6 @@ class CategorySearchViewModel @Inject constructor(
 
     fun onSearch(query: String) {
         _state.update { it.copy(query = query) }
-//        val categories = state.value.categories.filter {
-//            it.name.localizedName.asString()
-//        }
     }
 
     fun onCategoryClicked(categoryIndex: Int) {
